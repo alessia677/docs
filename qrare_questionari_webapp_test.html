@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QRare – Questionari ADHD e Funzioni Esecutive</title>
+  <style>
+    :root {
+      --bg: #f6f3ef;
+      --card: #ffffff;
+      --ink: #252525;
+      --muted: #6b6b6b;
+      --accent: #77665a;
+      --accent2: #a08370;
+      --line: #e6ded7;
+      --danger: #b42318;
+      --ok: #1f7a4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+    header {
+      padding: 36px 20px 20px;
+      background: linear-gradient(135deg, #fff, #efe5dc);
+      border-bottom: 1px solid var(--line);
+    }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    .brand {
+      display: inline-block;
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    h1 { margin: 0; font-size: clamp(28px, 4vw, 46px); line-height: 1.05; }
+    h2 { margin-top: 0; }
+    p.lead { font-size: 18px; color: var(--muted); max-width: 760px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      margin: 18px 0;
+      box-shadow: 0 14px 40px rgba(80, 60, 45, .07);
+    }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+    label { display: block; font-weight: 650; margin-bottom: 6px; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 13px;
+      font: inherit;
+      background: #fff;
+    }
+    textarea { min-height: 90px; }
+    .test-intro {
+      display: flex; gap: 14px; align-items: start; justify-content: space-between;
+      border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 18px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 11px; border-radius: 999px; background: #f3eee9; color: var(--accent); font-weight: 700;
+      white-space: nowrap; font-size: 13px;
+    }
+    .question {
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .question:last-child { border-bottom: 0; }
+    .qtitle { font-weight: 700; margin-bottom: 12px; }
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+    }
+    .opt {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      cursor: pointer;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 52px;
+    }
+    .opt input { width: auto; }
+    .actions {
+      position: sticky;
+      bottom: 0;
+      background: rgba(246,243,239,.94);
+      backdrop-filter: blur(10px);
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+      z-index: 5;
+    }
+    button {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      padding: 13px 18px;
+      border-radius: 999px;
+      font-weight: 750;
+      cursor: pointer;
+      margin: 4px;
+      font-size: 15px;
+    }
+    button.secondary { background: #fff; color: var(--accent); border: 1px solid var(--accent); }
+    button.danger { background: var(--danger); }
+    .notice {
+      padding: 14px 16px; border-radius: 14px; background: #fff8e6; border: 1px solid #f2dfaa; color: #654b00;
+      margin-top: 12px;
+    }
+    .error { color: var(--danger); font-weight: 700; }
+    .ok { color: var(--ok); font-weight: 700; }
+    #report { display: none; }
+    .score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+    .score {
+      background: #f9f7f4;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .score .num { font-size: 30px; font-weight: 850; color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+    th { background: #f7f2ed; }
+    .hidden { display:none !important; }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .card { padding: 18px; border-radius: 18px; }
+      .options { grid-template-columns: 1fr; }
+    }
+    @media print {
+      header, #formArea, .actions, .no-print { display: none !important; }
+      #report { display: block !important; }
+      body { background: #fff; }
+      .card { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
+      button { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <span class="brand">Centro QRare</span>
+      <h1>Questionari ADHD e Funzioni Esecutive</h1>
+      <p class="lead">Compilazione digitale per pazienti. Alla fine viene generato un report con risposte e punteggi raw, scaricabile in formato CSV/JSON e stampabile in PDF.</p>
+      <div class="notice"><strong>Nota clinica:</strong> i punteggi non costituiscono diagnosi. Il report deve essere interpretato dallo specialista.</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <form id="formArea">
+      <section class="card">
+        <h2>Dati paziente</h2>
+        <div class="grid">
+          <div><label>Nome e Cognome *</label><input name="nome" required></div>
+          <div><label>Data di nascita *</label><input type="date" name="nascita" required></div>
+          <div><label>Età *</label><input name="eta" required></div>
+          <div><label>Genere</label><select name="genere"><option></option><option>Maschio</option><option>Femmina</option><option>Altro</option><option>Preferisco non rispondere</option></select></div>
+          <div><label>Email</label><input type="email" name="email"></div>
+          <div><label>Telefono</label><input name="telefono"></div>
+        </div>
+        <div style="margin-top:14px">
+          <label>Note cliniche opzionali</label>
+          <textarea name="note" placeholder="Es. motivo della valutazione, invio da specialista, osservazioni..."></textarea>
+        </div>
+      </section>
+
+      <div id="tests"></div>
+
+      <section class="card">
+        <h2>Consenso e invio</h2>
+        <label class="opt">
+          <input type="checkbox" name="consenso" required>
+          Confermo di aver compilato il questionario in modo autonomo e consapevole.
+        </label>
+        <p id="missing" class="error"></p>
+      </section>
+    </form>
+
+    <section id="report" class="card"></section>
+  </main>
+
+  <div class="actions">
+    <div class="wrap">
+      <button type="button" onclick="generateReport()">Genera report</button>
+      <button type="button" class="secondary" onclick="downloadCSV()">Scarica CSV</button>
+      <button type="button" class="secondary" onclick="downloadJSON()">Scarica JSON</button>
+      <button type="button" class="secondary" onclick="window.print()">Stampa / Salva PDF</button>
+      <button type="button" class="danger" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+
+<script>
+const DATA = {"tests": [{"id": "asrs", "title": "ASRS – Scala di autovalutazione ADHD", "instructions": "Indichi quanto ciascuna situazione descrive come si è sentito/a o comportato/a negli ultimi 6 mesi.", "options": [["0", "Mai"], ["1", "Quasi mai"], ["2", "A volte"], ["3", "Spesso"], ["4", "Molto spesso"]], "questions": ["Ha difficoltà a finalizzare un progetto anche dopo aver terminato gli aspetti più impegnativi?", "Ha difficoltà a sistemare qualcosa quando deve svolgere un compito che richiede organizzazione?", "Ha difficoltà a ricordare obblighi o appuntamenti?", "Quando deve svolgere un compito che richiede uno sforzo di pensiero, quante volte evita o rinvia il lavoro?", "Si agita, si torce le mani o muove i piedi quando dovrebbe rimanere seduto per un periodo lungo?", "Si sente agitato o costretto a fare qualcosa, come se fosse spinto da un motore?", "Commette errori di distrazione durante un lavoro noioso o difficile?", "Ha difficoltà a concentrarsi su un lavoro noioso o ripetitivo?", "Ha difficoltà a concentrarsi su quello che le viene detto da qualcuno, anche se le sta parlando direttamente?", "Smarrisce o ha difficoltà a trovare qualcosa a casa o al lavoro?", "Viene distratto da movimenti o rumori attorno?", "Si alza dalla sedia in riunioni o altre situazioni in cui dovrebbe rimanere seduto?", "Si sente agitato o irrequieto?", "Ha difficoltà a distendersi o rilassarsi quando ha tempo libero?", "Crede di parlare troppo quando si trova in situazioni sociali?", "Durante una conversazione, si rende conto di rispondere alle domande prima che l’interlocutore abbia finito?", "Ha difficoltà ad aspettare il suo turno in situazioni in cui bisognerebbe rispettarlo?", "Interrompe gli altri quando sono impegnati?"]}, {"id": "caars", "title": "CAARS-S:S – Self Report Short Version", "instructions": "Legga attentamente ogni affermazione e scelga quanto intensamente o quanto spesso le accade negli ultimi tempi.", "options": [["0", "Per nulla / Mai"], ["1", "Solo un po’ / Una volta ogni tanto"], ["2", "Abbastanza / Spesso"], ["3", "Molto spesso / Molto frequente"]], "questions": ["Interrompo gli altri mentre parlano.", "Sono sempre in movimento come se fossi spinto da un motore.", "Sono disorganizzato.", "È molto difficile per me rimanere in un luogo per molto tempo.", "È molto difficile per me gestire/tenere le fila di più cose contemporaneamente.", "Mi annoio facilmente.", "Basta poco per farmi saltare i nervi. Sono irritabile.", "Sono polemico, faccio scenate.", "Evito nuove sfide perché non ho fiducia nelle mie capacità.", "Preferisco attività frenetiche e stimolanti.", "Mi sento irrequieto, anche quando sto seduto.", "Ciò che accade intorno mi distrae da quello che sto facendo.", "Molte cose mi innervosiscono facilmente.", "Il mio rendimento è inferiore al mio potenziale o al di sotto delle aspettative.", "Sono una persona che si abbatte.", "Non lo do a vedere ma non sono sicuro di me stesso.", "Tendo a non fare le cose, a meno che non ci sia una scadenza assoluta.", "Ho problemi ad iniziare un’attività.", "M’intrometto nelle attività degli altri.", "Il mio umore è imprevedibile.", "Sono sbadato nelle attività quotidiane.", "Alcune volte sono così concentrato da isolarmi dal mondo esterno, altre volte invece non riesco a focalizzarmi sulle cose e tutto mi distrae.", "Tendo a dimenarmi e agitarmi.", "Non riesco a tenere a mente una cosa, a meno che non mi interessi molto.", "Vorrei avere maggiore fiducia nelle mie capacità.", "I fallimenti passati incidono molto sulla mia autostima."]}, {"id": "wurs", "title": "WURS-25 – Wender Utah Rating Scale", "instructions": "Indichi quanto ciascuna affermazione era vera per lei tra gli 8 e i 10 anni.", "options": [["0", "Per niente o solo marginalmente"], ["1", "Lievemente"], ["2", "Moderatamente"], ["3", "Decisamente"], ["4", "Molto intensamente"]], "questions": ["Problemi di concentrazione, facilmente distraibile", "Ansioso, preoccupato", "Nervoso, irrequieto", "Distratto, trasognato", "Facilmente arrabbiato, irascibile", "Crolli emotivi, esplosioni di rabbia", "Scarsa perseveranza, interrompere le attività prima di finirle", "Testardo, ostinato", "Spesso triste, depresso, infelice", "Indisciplinato, disobbediente con i genitori, ribelle", "Scarsa autostima, bassa considerazione di sé", "Facilmente irritabile", "Forti sbalzi d’umore, lunatico", "Irritabile, arrabbiato", "Impulsivo, agire senza riflettere", "Tendenza a essere immaturo", "Sensi di colpa e pentimento", "Perdita dell’autocontrollo", "Tendenza a essere o ad agire irrazionalmente", "Impopolare con gli altri bambini, non mantenere a lungo le amicizie", "Problemi ad assumere il punto di vista di qualcun altro", "Problemi a scuola o con le autorità, convocazioni dal direttore", "Complessivamente un cattivo alunno, imparavo lentamente", "Problemi con calcoli e numeri", "Non ho sfruttato a pieno le mie potenzialità"]}, {"id": "brief", "title": "BRIEF-A – Funzioni esecutive adulto", "instructions": "Nell’ultimo mese, quanto spesso ciascuno dei seguenti comportamenti è stato un problema?", "options": [["0", "Mai"], ["1", "Qualche volta"], ["2", "Spesso"]], "questions": ["Ho scoppi d’ira, perdo facilmente la pazienza.", "Mentre svolgo un lavoro, compio errori di distrazione.", "Sono disorganizzato/a.", "Ho difficoltà a concentrarmi durante lo svolgimento di un’attività.", "Tamburello con le dita o muovo nervosamente le gambe.", "Ho bisogno che mi venga ricordato di iniziare un’attività, anche quando ho voglia di farlo.", "Ho un armadio disordinato, tengo in disordine le mie cose.", "È per me difficile passare da un’attività all’altra.", "I lavori impegnativi mi sfiniscono.", "Mi dimentico il mio nome.", "Ho problemi a svolgere lavori o mansioni che prevedono più di un passaggio.", "Reagisco emotivamente in modo esagerato.", "Non mi accorgo quando il mio comportamento fa star male gli altri o li fa arrabbiare.", "Ho difficoltà a prepararmi ad affrontare la giornata.", "Ho difficoltà a stabilire un ordine di priorità nelle attività da svolgere.", "Ho problemi a stare seduto/a tranquillo/a e fermo/a.", "Durante lo svolgimento di un’attività, mi dimentico cosa sto facendo.", "Non controllo se ci sono errori nel mio lavoro.", "Mi altero per motivi banali.", "Perdo molto tempo a casa oziando.", "Inizio un’attività senza predisporre il materiale adeguato.", "Ho difficoltà ad accettare modi diversi per risolvere un problema.", "Parlo al momento sbagliato.", "Non riesco a giudicare quanto un’attività sarà lunga o difficile.", "Ho problemi a incominciare un’attività da solo/a.", "Ho difficoltà a rimanere sullo stesso argomento mentre sto parlando.", "Mi stanco.", "In confronto ai miei amici reagisco alle situazioni con maggiore emotività.", "Ho difficoltà ad aspettare il mio turno.", "Dicono di me che sono disorganizzato/a.", "Perdo gli oggetti.", "Faccio fatica a pensare modi diversi di risolvere un problema.", "Reagisco in modo esagerato a problemi di poco conto.", "Non pianifico in anticipo le attività future.", "Riesco a stare attento/a solo per poco tempo.", "Faccio commenti inadeguati sugli altri.", "Quando le persone sono arrabbiate con me non ne capisco il motivo.", "Ho difficoltà a contare fino a tre.", "Ho obiettivi irrealistici.", "Lascio il bagno in disordine.", "Faccio errori di distrazione.", "Da un punto di vista emotivo mi lascio turbare facilmente.", "Prendo decisioni che mi mettono nei guai.", "Mi sento a disagio quando devo affrontare dei cambiamenti.", "Ho difficoltà a entusiasmarmi per le cose.", "Dimentico facilmente le istruzioni.", "Ho delle buone idee, ma non sono in grado di organizzarle e presentarle.", "Faccio degli errori.", "Ho difficoltà a iniziare le attività.", "Dico le cose senza riflettere.", "La mia rabbia è intensa, ma si placa rapidamente.", "Ho difficoltà a portare a termine le attività.", "Inizio le attività solo all’ultimo momento.", "Ho problemi a portare a termine un’attività da solo/a.", "Dicono che mi distraggo facilmente.", "Ho problemi a tenere a mente qualcosa, anche per pochi minuti.", "Le persone dicono che sono troppo emotivo/a.", "Svolgo le cose in modo frettoloso.", "Mi irrito.", "Lascio in disordine la mia camera o la casa.", "Mi disturbano i cambiamenti inaspettati nelle mie abitudini quotidiane.", "Fatico a farmi venire idee su cosa fare nel tempo libero.", "Non pianifico in anticipo le mie attività.", "Le persone dicono che non penso prima di agire.", "Ho problemi a trovare gli oggetti nella mia stanza, nel mio armadio o sulla scrivania.", "Ho problemi a organizzare le attività.", "Dopo che ho avuto un problema, non riesco facilmente a pensare ad altro.", "Ho difficoltà a fare più di una cosa alla volta.", "Il mio umore cambia frequentemente.", "Non penso alle conseguenze di un’azione prima di compierla.", "Ho difficoltà a organizzare il lavoro.", "Piccole cose mi turbano facilmente.", "Sono impulsivo/a.", "Non rimetto a posto le mie cose.", "Ho problemi nel completare il mio lavoro."]}]};
+let lastReport = null;
+
+function renderTests() {
+  const container = document.getElementById('tests');
+  container.innerHTML = '';
+  DATA.tests.forEach(test => {
+    const section = document.createElement('section');
+    section.className = 'card';
+    section.innerHTML = `
+      <div class="test-intro">
+        <div>
+          <h2>${escapeHtml(test.title)}</h2>
+          <p>${escapeHtml(test.instructions)}</p>
+        </div>
+        <span class="badge">${test.questions.length} item</span>
+      </div>
+    `;
+    test.questions.forEach((q, idx) => {
+      const qDiv = document.createElement('div');
+      qDiv.className = 'question';
+      const name = `${test.id}_${idx+1}`;
+      qDiv.innerHTML = `
+        <div class="qtitle">${idx+1}. ${escapeHtml(q)}</div>
+        <div class="options">
+          ${test.options.map(([score,label]) => `
+            <label class="opt">
+              <input type="radio" name="${name}" value="${score}" data-label="${escapeHtml(label)}" required>
+              <span><strong>${score}</strong> – ${escapeHtml(label)}</span>
+            </label>
+          `).join('')}
+        </div>
+      `;
+      section.appendChild(qDiv);
+    });
+    container.appendChild(section);
+  });
+}
+
+function collectData() {
+  const form = document.getElementById('formArea');
+  if (!form.reportValidity()) {
+    document.getElementById('missing').innerText = 'Compila tutti i campi obbligatori e tutte le risposte.';
+    return null;
+  }
+  document.getElementById('missing').innerText = '';
+
+  const fd = new FormData(form);
+  const patient = {
+    nome: fd.get('nome') || '',
+    nascita: fd.get('nascita') || '',
+    eta: fd.get('eta') || '',
+    genere: fd.get('genere') || '',
+    email: fd.get('email') || '',
+    telefono: fd.get('telefono') || '',
+    note: fd.get('note') || '',
+    dataCompilazione: new Date().toLocaleString('it-IT')
+  };
+
+  const scores = {};
+  const answers = [];
+
+  DATA.tests.forEach(test => {
+    scores[test.id] = 0;
+    test.questions.forEach((q, idx) => {
+      const name = `${test.id}_${idx+1}`;
+      const selected = document.querySelector(`input[name="${name}"]:checked`);
+      const value = selected ? Number(selected.value) : 0;
+      const label = selected ? selected.dataset.label : '';
+      scores[test.id] += value;
+      answers.push({
+        test: test.title,
+        testId: test.id,
+        item: idx + 1,
+        question: q,
+        score: value,
+        answer: label
+      });
+    });
+  });
+
+  scores.asrs_parte_a = answers.filter(a => a.testId === 'asrs' && a.item >= 1 && a.item <= 6).reduce((s,a) => s + a.score, 0);
+  scores.asrs_parte_b = answers.filter(a => a.testId === 'asrs' && a.item >= 7 && a.item <= 18).reduce((s,a) => s + a.score, 0);
+
+  return { patient, scores, answers };
+}
+
+function generateReport() {
+  const data = collectData();
+  if (!data) return;
+  lastReport = data;
+
+  const report = document.getElementById('report');
+  report.style.display = 'block';
+
+  const scoreCards = `
+    <div class="score-grid">
+      <div class="score"><div>ASRS Totale</div><div class="num">${data.scores.asrs}</div><small>Parte A: ${data.scores.asrs_parte_a} · Parte B: ${data.scores.asrs_parte_b}</small></div>
+      <div class="score"><div>CAARS Totale</div><div class="num">${data.scores.caars}</div><small>Raw score</small></div>
+      <div class="score"><div>WURS-25 Totale</div><div class="num">${data.scores.wurs}</div><small>Raw score</small></div>
+      <div class="score"><div>BRIEF-A Totale</div><div class="num">${data.scores.brief}</div><small>Raw score</small></div>
+    </div>
+  `;
+
+  const rows = data.answers.map(a => `
+    <tr>
+      <td>${escapeHtml(a.test)}</td>
+      <td>${a.item}</td>
+      <td>${escapeHtml(a.question)}</td>
+      <td>${a.score}</td>
+      <td>${escapeHtml(a.answer)}</td>
+    </tr>
+  `).join('');
+
+  report.innerHTML = `
+    <h2>Report questionari – Centro QRare</h2>
+    <p><strong>Nome:</strong> ${escapeHtml(data.patient.nome)}<br>
+    <strong>Data di nascita:</strong> ${escapeHtml(data.patient.nascita)} · <strong>Età:</strong> ${escapeHtml(data.patient.eta)} · <strong>Genere:</strong> ${escapeHtml(data.patient.genere)}<br>
+    <strong>Email:</strong> ${escapeHtml(data.patient.email)} · <strong>Telefono:</strong> ${escapeHtml(data.patient.telefono)}<br>
+    <strong>Data compilazione:</strong> ${escapeHtml(data.patient.dataCompilazione)}</p>
+    ${data.patient.note ? `<p><strong>Note:</strong> ${escapeHtml(data.patient.note)}</p>` : ''}
+    <h3>Punteggi finali</h3>
+    ${scoreCards}
+    <div class="notice"><strong>Nota:</strong> punteggi raw digitalizzati. Non sostituiscono valutazione clinica, colloquio diagnostico o interpretazione specialistica.</div>
+    <h3>Risposte complete</h3>
+    <table>
+      <thead><tr><th>Test</th><th>Item</th><th>Domanda</th><th>Punteggio</th><th>Risposta</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+
+  report.scrollIntoView({ behavior: 'smooth' });
+}
+
+function downloadJSON() {
+  if (!lastReport) generateReport();
+  if (!lastReport) return;
+  const blob = new Blob([JSON.stringify(lastReport, null, 2)], { type: 'application/json;charset=utf-8' });
+  downloadBlob(blob, fileBaseName() + '.json');
+}
+
+function downloadCSV() {
+  if (!lastReport) generateReport();
+  if (!lastReport) return;
+
+  const lines = [];
+  lines.push(['Campo','Valore'].join(';'));
+  Object.entries(lastReport.patient).forEach(([k,v]) => lines.push([csv(k), csv(v)].join(';')));
+  lines.push('');
+  lines.push(['Punteggio','Valore'].join(';'));
+  Object.entries(lastReport.scores).forEach(([k,v]) => lines.push([csv(k), csv(v)].join(';')));
+  lines.push('');
+  lines.push(['Test','Item','Domanda','Punteggio','Risposta'].join(';'));
+  lastReport.answers.forEach(a => {
+    lines.push([csv(a.test), csv(a.item), csv(a.question), csv(a.score), csv(a.answer)].join(';'));
+  });
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+  downloadBlob(blob, fileBaseName() + '.csv');
+}
+
+function resetAll() {
+  if (confirm('Vuoi cancellare tutte le risposte inserite?')) {
+    document.getElementById('formArea').reset();
+    document.getElementById('report').style.display = 'none';
+    lastReport = null;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function fileBaseName() {
+  const nome = (lastReport?.patient?.nome || 'paziente').replace(/[^a-z0-9àèéìòù_-]+/gi, '_');
+  const date = new Date().toISOString().slice(0,10);
+  return `report_QRare_${nome}_${date}`;
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function csv(value) {
+  const s = String(value ?? '').replace(/"/g, '""');
+  return `"${s}"`;
+}
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+renderTests();
+</script>
+</body>
+</html>
